@@ -1,0 +1,75 @@
+﻿@page "/serpientes-editar/{Longitud}"
+@inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
+
+
+
+<h3>SerpientesIngreso</h3>
+
+<EditForm Model="@serpiente" OnValidSubmit="@Guardar">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Nombre">Nombre</label>
+        <InputText id="Nombre" @bind-Value="serpiente.Nombre" class="form-control" />
+        <ValidationMessage For="() => serpiente.Nombre" />
+    </div>
+    <div class="form-group">
+        <label for="Especie">Especie</label>
+        <InputText id="Especie" @bind-Value="serpiente.Especie" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="TiempoAlimentacion">Tiempo de alimentacion</label>
+        <InputNumber id="TiempoAlimentacion" @bind-Value="serpiente.TiempoAlimentacion" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="TiempoVida">Tiempo de Vida</label>
+        <InputNumber id="TiempoVida" @bind-Value="serpiente.TiempoVida" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="Venenosa">Serpiente Venenosa</label>
+        <InputText id="Venenosa" @bind-Value="serpiente.Venenosa" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="Longitud">Longitud Maxima</label>
+        <InputNumber id="Longitud" @bind-Value="serpiente.Longitud" class="form-control" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </div>
+</EditForm>
+
+
+
+@code {
+
+    private Serpientes serpiente = new Serpientes();
+    List<Serpientes> serpientes = new List<Serpientes>();
+    [Parameter]
+    public int longitud { get; set; }
+
+
+    protected async Task Guardar()
+    {
+
+
+        await localStorage.SetItemAsync("serpientes", serpientes);
+        NavigationManager.NavigateTo("/serpientes-editar");
+
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {   //La primera vez que se corre poner en comentarios, pues como no existen datos
+        //convierta la lista catedraticos en null
+        serpientes = await localStorage.GetItemAsync<List<Serpientes>>("serpientes");
+
+        serpiente = serpientes.FirstOrDefault(c => c.Longitud == longitud);
+    }
+}
+
+
+
